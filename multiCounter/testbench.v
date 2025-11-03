@@ -60,7 +60,7 @@ module testbench();
         button_3 = 0;
         button_2 = 0;
 
-        #1000000
+        #10000000
         button_3 = 1;
 
         #100
