@@ -4,7 +4,6 @@ module btn_stable(
     input btn,
     output reg flag
 );
-
     reg signal_0;
     reg signal_1;
     reg signal_2;
