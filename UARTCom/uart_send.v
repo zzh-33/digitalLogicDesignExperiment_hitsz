@@ -36,7 +36,7 @@ module uart_send(
 
     // 第3个always块，描述输出逻辑，也可以用next_state作判断，对时序不敏感的电路两者都可以。
     always @(posedge clk or posedge rst) begin
-        if(rst) out <= 2'b00;
+        if(rst) dout <= 2'b00;
         else begin
             case(current_state)
                 IDLE:   dout <= 1;
