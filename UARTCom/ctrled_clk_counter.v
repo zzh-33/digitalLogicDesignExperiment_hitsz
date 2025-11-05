@@ -10,8 +10,8 @@ module ctrled_clk_counter #(
     output reg update
 );
 
-    reg [24:0] count;
-    wire [24:0] count_max = CNT_MAX;
+    reg [17:0] count;
+    wire [17:0] count_max = CNT_MAX;
     reg cnt_inc;
 
     always @ (posedge clk or posedge rst) begin
