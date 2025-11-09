@@ -79,7 +79,7 @@ initial begin
     #PERIOD;
     valid = 1'b0;
     check_uart_output(data);   
-    #(10*PERIOD);  
+    #(100*PERIOD);  
 
     // test case5: 8'h5A (01011010)
     data  = 8'h5A;
