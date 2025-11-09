@@ -2,10 +2,11 @@ module data_select(
     input clk,
     input rst,
     input valid,
-    input [3:0] data_index,
     output reg finish,
     output reg [7:0] data
 );
+
+    reg [3:0] data_index;
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin

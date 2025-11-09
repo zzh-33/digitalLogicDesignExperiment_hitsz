@@ -31,13 +31,11 @@ module UARTCom_top(
     );
 
     wire [7:0] data;
-    wire [3:0] data_index;
 
     data_select u_data_select(
         .clk(clk),
         .rst(rst),
         .valid(valid),
-        .data_index(data_index),
         .finish(finish_bit),
         .data(data)
     );
