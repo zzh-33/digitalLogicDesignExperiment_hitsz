@@ -11,7 +11,7 @@ module data_select(
     always @(posedge clk or posedge rst) begin
         if(rst) begin
             data_index <= 0;
-        end else if(data_index >= 4'b1110) begin
+        end else if(data_index >= 4'b1111) begin
             data_index <= 0;
         end else if (valid) begin
             data_index <= data_index + 1;
@@ -23,7 +23,7 @@ module data_select(
     always @(posedge clk or posedge rst) begin
         if(rst) begin
             finish <= 0;
-        end else if(data_index >= 4'b1110) begin
+        end else if(data_index >= 4'b1111) begin
             finish <= 1;
         end else begin
             finish <= 0;
