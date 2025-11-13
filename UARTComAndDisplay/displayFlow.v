@@ -31,7 +31,7 @@ module displayFlow (
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            display_flow[47:0] = 48'b1;
+            display_flow[47:0] = 48'hffffffffffff;
         end else if (display_reg[7:0] != 8'b11111111 && valid) begin
             display_flow[47:0] = {display_flow[39:0], display_reg[7:0]};
         end else begin 

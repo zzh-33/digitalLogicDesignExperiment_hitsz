@@ -1,7 +1,6 @@
 module led_ctrl_unit (
     input wire rst,
     input wire clk,
-    input wire en,
     input wire [63:0] display,
     output reg [7:0]  led_en,
     output reg [7:0]  led_cx
@@ -46,8 +45,6 @@ module led_ctrl_unit (
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin
-            led_en <= 8'b1111_1111;
-        end else if (~en) begin
             led_en <= 8'b1111_1111;
         end else begin
             case (location)
