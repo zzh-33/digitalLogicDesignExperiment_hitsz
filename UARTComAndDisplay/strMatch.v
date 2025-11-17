@@ -23,6 +23,12 @@ module strMatch (
 
     reg [3:0] currentState;
     reg [3:0] nextState;
+    
+    reg noMatch;
+    reg isMatched;
+    reg cnt_inc;
+    reg [17:0] cnt;
+    wire [17:0] cnt_max = 104160;
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin
@@ -39,71 +45,137 @@ module strMatch (
                         else if (data_in == 8'h68) nextState = H;
                         else nextState = NULL;
                     end else nextState = currentState;
+                    
             S:      if (valid) begin
                         if(data_in == 8'h74) nextState = ST;
                         else  nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             ST:     if (valid) begin
                         if(data_in == 8'h61) nextState = STA;
                         else if (data_in == 8'h6f) nextState = STO;
                         else nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             STA:    if (valid) begin
                         if(data_in == 8'h72) nextState = STAR;
                         else nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             STO:    if (valid) begin
                         if (data_in == 8'h70) nextState = STOP;
                         else nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             STAR:   if (valid) begin
                         if (data_in == 8'h74) nextState = START;
                         else nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             START:  if (valid) begin
                         if(data_in == 8'h73) nextState = S;
                         else if (data_in == 8'h68) nextState = H;
                         else  nextState = NULL;
                     end else nextState = currentState;
+                    
             STOP:   if (valid) begin
                         if(data_in == 8'h73) nextState = S;
                         else if (data_in == 8'h68) nextState = H;
                         else  nextState = NULL;
                     end else nextState = currentState;
+                    
             H:      if (valid) begin
                         if (data_in == 8'h69) nextState = HI;
                         else nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             HI:     if (valid) begin
                         if (data_in == 8'h74) nextState = HIT;
                         else nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             HIT:    if (valid) begin
                         if (data_in == 8'h73) nextState = HITS;
                         else nextState = NULL;
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             HITS:   if (valid) begin
                         if (data_in == 8'h7a) nextState = HITSZ;
                         else nextState = NULL;                       
-                    end else nextState = currentState;
+                    end else if (cnt == cnt_max) nextState = NULL;
+                        else nextState = currentState;
+                        
             HITSZ: if (valid) begin
                         if (data_in == 8'h73) nextState = S;
                         else if (data_in == 8'h68) nextState = H;
                         else nextState = NULL;
                     end else nextState = currentState;
+                    
             default: nextState = currentState;
         endcase
     end
 
     always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            cnt_inc <= 0;
+        end else if (cnt > cnt_max && isMatched) begin
+            cnt_inc <= 0;
+        end else if (valid) begin 
+            cnt_inc <= 1;
+        end else begin
+            cnt_inc <= cnt_inc;
+        end
+    end
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            cnt <= 0;
+        end else if (cnt > cnt_max || valid) begin
+            cnt <= 0;
+        end else if (cnt_inc) begin
+            cnt <= cnt + 1;
+        end else begin
+            cnt <= cnt;
+        end
+     end
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            isMatched <= 0;
+        end else if (cnt > cnt_max) begin
+            isMatched <= 0;
+        end else if (match) begin
+            isMatched <= 1;
+        end else begin
+            isMatched <= isMatched;
+        end
+    end
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            noMatch <= 0;
+        end else if (cnt == cnt_max && currentState == NULL && isMatched == 0) begin
+            noMatch <= 1;
+        end else begin
+            noMatch <= 0;
+        end
+    end
+
+    always @(posedge clk or posedge rst) begin
         if(rst) begin
             match <= 0;
-        end else if (valid) begin
-            if (currentState == HITSZ || currentState == STOP || currentState == START || currentState == NULL) begin
-                match <= 1;
-            end else begin
-                match <= 0;
-            end 
+        end else if (valid &&(nextState == START || nextState == STOP || nextState == HITSZ)) begin
+            match <= 1;
+        end else if (noMatch) begin
+            match <= 1;
         end else begin
             match <= 0;
         end
